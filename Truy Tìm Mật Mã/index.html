@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>🔍 Săn Tim Mật Mã Công Dân Số</title>
+  <link rel="stylesheet" href="style.css" />
+  <!-- Google Fonts: Baloo 2 (vui, trẻ em) + Share Tech Mono (tech/AI) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;700;800&family=Share+Tech+Mono&display=swap" rel="stylesheet" />
+</head>
+<body>
+
+  <!-- ==============================
+       MÀN HÌNH MỞ ĐẦU (SPLASH)
+  ============================== -->
+  <div id="screen-splash" class="screen active">
+    <!-- Nền công nghệ dễ thương -->
+    <div class="bg-grid"></div>
+    <div class="floating-icons" aria-hidden="true">
+      <span>🤖</span><span>💻</span><span>📱</span><span>🌐</span>
+      <span>🔐</span><span>⭐</span><span>🚀</span><span>💡</span>
+    </div>
+
+    <!-- Logo + tiêu đề -->
+    <div class="splash-content">
+      <div class="logo-wrap">
+        <div class="logo-ring"></div>
+        <div class="logo-icon">🔍</div>
+      </div>
+
+      <h1 class="game-title">
+        <span class="title-line1">Săn Tim</span>
+        <span class="title-line2">Mật Mã</span>
+        <span class="title-line3">Công Dân Số</span>
+      </h1>
+
+      <p class="subtitle">Quét QR · Giải mã · Thu thập tim 💙</p>
+
+      <!-- Hiển thị số nhiệm vụ còn lại -->
+      <div class="missions-left-badge">
+        <span id="splash-remaining">50</span> mật mã chưa khám phá
+      </div>
+
+      <button id="btn-start" class="btn-primary pulse-btn" onclick="startScan()">
+        <span class="btn-icon">⚡</span>
+        BẮT ĐẦU GIẢI MÃ
+      </button>
+
+      <p class="footer-hint">Dành cho các công dân số nhí 🌟</p>
+    </div>
+  </div>
+
+  <!-- ==============================
+       MÀN HÌNH SCANNING / LOADING
+  ============================== -->
+  <div id="screen-scanning" class="screen">
+    <div class="bg-grid"></div>
+    <div class="scan-container">
+
+      <!-- QR scan animation -->
+      <div class="qr-frame">
+        <div class="qr-corners">
+          <span class="corner tl"></span>
+          <span class="corner tr"></span>
+          <span class="corner bl"></span>
+          <span class="corner br"></span>
+        </div>
+        <!-- Icon QR ở giữa -->
+        <div class="qr-center-icon">📡</div>
+        <!-- Thanh scan di chuyển -->
+        <div class="scan-line"></div>
+      </div>
+
+      <!-- Text trạng thái -->
+      <div class="scan-status">
+        <p id="scan-text" class="scan-text">Đang quét mã QR...</p>
+        <div class="dots-loader">
+          <span></span><span></span><span></span>
+        </div>
+      </div>
+
+      <!-- Thanh tiến trình giải mã -->
+      <div class="decode-bar-wrap">
+        <div class="decode-bar-label">
+          <span>AI GIẢI MÃ</span>
+          <span id="decode-percent">0%</span>
+        </div>
+        <div class="decode-bar-track">
+          <div id="decode-bar-fill" class="decode-bar-fill"></div>
+        </div>
+      </div>
+
+      <!-- Các dòng code chạy giả -->
+      <div class="fake-code" id="fake-code" aria-hidden="true"></div>
+    </div>
+  </div>
+
+  <!-- ==============================
+       MÀN HÌNH NHIỆM VỤ
+  ============================== -->
+  <div id="screen-mission" class="screen">
+    <div class="bg-grid"></div>
+
+    <!-- Header nhỏ -->
+    <div class="mission-header">
+      <div class="mission-counter">
+        <span id="missions-used">0</span>/50 mật mã
+      </div>
+      <div class="header-logo">🔍</div>
+    </div>
+
+    <!-- Card nhiệm vụ chính -->
+    <div class="mission-card-wrap">
+      <div id="mission-card" class="mission-card">
+
+        <!-- Loại nhiệm vụ badge -->
+        <div id="mission-type-badge" class="mission-type-badge">
+          <span id="mission-type-icon">❓</span>
+          <span id="mission-type-label">CÂU HỎI</span>
+        </div>
+
+        <!-- Số nhiệm vụ -->
+        <div class="mission-number">
+          MẬT MÃ #<span id="mission-number">01</span>
+        </div>
+
+        <!-- Nội dung nhiệm vụ -->
+        <div id="mission-content" class="mission-content">
+          <!-- Nội dung sẽ được JS điền vào -->
+        </div>
+
+        <!-- 4 đáp án (chỉ hiện với câu hỏi) -->
+        <div id="answers-wrap" class="answers-wrap" style="display:none"></div>
+
+        <!-- Phần thưởng gợi ý -->
+        <div id="mission-reward" class="mission-reward">
+          <span>💙 Hoàn thành → Giữ QR lại!</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Overlay kết quả đúng/sai -->
+    <div id="result-overlay" class="result-overlay">
+      <div id="result-box" class="result-box">
+        <div id="result-icon" class="result-icon">🎉</div>
+        <div id="result-title" class="result-title">Chính xác!</div>
+        <div id="result-msg" class="result-msg">Bạn được phép thu thập mã QR này! 💙</div>
+        <button class="btn-primary result-continue-btn" onclick="closeResult()">
+          Xem lại nhiệm vụ ✓
+        </button>
+      </div>
+    </div>
+
+    <!-- Các nút hành động -->
+    <div class="action-buttons">
+      <button class="btn-secondary" onclick="goBack()">
+        ← QUAY LẠI
+      </button>
+      <button class="btn-primary btn-new" onclick="getNewMission()">
+        NHIỆM VỤ MỚI ⚡
+      </button>
+    </div>
+  </div>
+
+  <!-- ==============================
+       MÀN HÌNH KẾT THÚC (hết 50 nhiệm vụ)
+  ============================== -->
+  <div id="screen-end" class="screen">
+    <div class="bg-grid"></div>
+    <div class="end-content">
+      <div class="end-icon">🏆</div>
+      <h2 class="end-title">Toàn Bộ Mật Mã<br/>Đã Được Khám Phá!</h2>
+      <p class="end-subtitle">50/50 mật mã công dân số đã giải mã thành công! 🎉</p>
+      <div class="confetti-row" aria-hidden="true">
+        🎊🎉🌟💙⭐🎊🎉🌟💙⭐
+      </div>
+      <button class="btn-primary" onclick="resetGame()">
+        🔄 CHƠI LẠI TỪ ĐẦU
+      </button>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
